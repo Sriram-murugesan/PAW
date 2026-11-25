@@ -1,0 +1,45 @@
+[package]
+name = "paw-desktop"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "paw_desktop"
+
+[[bin]]
+name = "paw-desktop"
+path = "src/main.rs"
+
+[features]
+# Runs a scripted check inside the real WebView. Never part of a normal build.
+smoke = []
+
+[build-dependencies]
+tauri-build = "2"
+
+[dependencies]
+getrandom = "0.3"
+libc = "0.2"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+tokio = { version = "1", features = ["time", "rt"] }
+
+[dev-dependencies]
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.release]
+strip = true

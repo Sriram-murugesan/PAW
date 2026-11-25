@@ -1,0 +1,24 @@
+main(async () => {
+  await page("Memory");
+  await until("kept", () => document.querySelector("main li")?.innerText.includes("Kept through the app"));
+  const items = [{ category: "career_goal", title: "From a proposal", content: "Become an AI/ML Engineer." }];
+  const imported = await api("POST", "/api/memory/proposals/import", { items });
+  await page("Settings");
+  await press("Back up now");
+  await until("backup", () => document.querySelector("main").innerText.includes("Backup made."));
+  await page("Memory");
+  [...document.querySelectorAll("[role=tab]")][1].click();
+  await wait(300);
+  await press("Approve");
+  await until("empty", () => document.querySelector("main").innerText.includes("Nothing to review"));
+  [...document.querySelectorAll("[role=tab]")][0].click();
+  await until("two", () => document.querySelectorAll("main li").length === 2);
+  await page("Settings");
+  await press("Restore");
+  await until("dialog", () => document.querySelector("dialog[open]"));
+  [...document.querySelectorAll("dialog button")].find((b) => b.textContent === "Restore").click();
+  await until("restored", () => document.querySelector("main").innerText.includes("Restored."));
+  await page("Memory");
+  await until("one", () => document.querySelectorAll("main li").length === 1);
+  return { imported: imported.body.data, appViolations: violations };
+});
